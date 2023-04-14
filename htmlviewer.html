@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SIP Calculator</title>
+	<script>
+		function calculate() {
+			// Get user inputs
+			var investment_amount = parseFloat(document.getElementById("investment_amount").value);
+			var interest_rate = parseFloat(document.getElementById("interest_rate").value);
+			var investment_period = parseInt(document.getElementById("investment_period").value);
+			var inflation_rate = parseFloat(document.getElementById("inflation_rate").value);
+			var tax_rate = parseFloat(document.getElementById("tax_rate").value);
+			var fee_rate = parseFloat(document.getElementById("fee_rate").value);
+
+			// Convert annual interest rate to monthly rate
+			var monthly_rate = (interest_rate / 12) / 100;
+
+			// Calculate total investment amount
+			var total_investment = investment_amount * investment_period * 12;
+
+			// Calculate future value of investment
+			var future_value = 0;
+			for (var i = 0; i < investment_period * 12; i++) {
+				// Adjust investment amount for inflation
+				var adjusted_investment_amount = investment_amount / Math.pow((1 + inflation_rate / 100), i / 12);
+
+				// Subtract fees from investment amount
+				var investment_amount_after_fee = adjusted_investment_amount * (1 - fee_rate / 100);
+
+				// Calculate tax on investment gains
+				var taxable_gain = (future_value + investment_amount_after_fee) * monthly_rate;
+				var tax_amount = taxable_gain * (tax_rate / 100);
+
+				// Calculate net gain after fees and taxes
+				var net_gain = taxable_gain - tax_amount - (investment_amount_after_fee - adjusted_investment_amount);
+
+				// Add net gain to future value
+				future_value = future_value + investment_amount_after_fee + net_gain;
+			}
+
+			// Display results
+			document.getElementById("total_investment").innerHTML = "Total investment amount over " + investment_period + " years: $" + total_investment.toFixed(2);
+			document.getElementById("future_value").innerHTML = "Future value after " + investment_period + " years: $" + future_value.toFixed(2);
+		}
+	</script>
+</head>
+<body>
+	<h1>SIP Calculator</h1>
+	<form>
+		<label>Monthly Investment Amount:</label>
+		<input type="number" id="investment_amount"><br><br>
+		<label>Expected Rate of Return (%):</label>
+		<input type="number" id="interest_rate"><br><br>
+		<label>Investment Period (in years):</label>
+		<input type="number" id="investment_period"><br><br>
+		<label>Expected Inflation Rate (%):</label>
+		<input type="number" id="inflation_rate"><br><br>
+		<label>Tax Rate (%):</label>
+		<input type="number" id="tax_rate"><br><br>
+		<label>Investment Fee Rate (%):</label>
+		<input type="number" id="fee_rate"><br><br>
+		<input type="button" value="Calculate" onclick="calculate()">
+	</form>
+	<br>
+	<div id="results">
+		<span id="total_investment"></span><br>
+		<span id="future_value"></span>
+	</div>
+</body>
+</html>
